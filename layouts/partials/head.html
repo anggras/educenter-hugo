@@ -5,13 +5,13 @@
   {{- template "_internal/opengraph.html" . -}}
   {{- template "_internal/twitter_cards.html" . -}}
   
-  {{ "<!-- plugins -->" | safeHTML }}
-  {{ range .Site.Params.plugins.css }}
-  <link rel="stylesheet" href="{{ .link | absURL }}">
-  {{ end }}
-
-  {{ "<!-- Main Stylesheet -->" | safeHTML }}
-  {{ $styles := resources.Get "scss/style.scss" | toCSS }}
-  <link rel="stylesheet" href="{{ $styles.Permalink }}" media="screen">
-
+  {{- $cssSlice := slice -}}
+  {{- $assets := resources.Get "assets.json" | unmarshal -}}
+  {{- range $assets.styles -}}
+    {{- $cssSlice = $cssSlice | append (resources.Get . ) -}}
+  {{- end -}}
+  {{- $cssSlice = $cssSlice | append (resources.Get "scss/style.scss" | toCSS) -}}
+  {{- $css := $cssSlice | resources.Concat "css/bundle.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+  <link rel="stylesheet" href="{{ "css/add-on.css" | relURL }}">
 </head>

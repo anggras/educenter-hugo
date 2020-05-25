@@ -1,0 +1,12 @@
+{{ with .Site.Params.map.gmap_api }}
+<script src="{{ . | safeURL }}"></script>
+{{ end }}
+{{- $jsSlice := slice -}}
+{{- $assets := resources.Get "assets.json" | unmarshal -}}
+{{- range $assets.scripts -}}
+    {{- $jsSlice = $jsSlice | append (resources.Get . ) -}}
+{{- end -}}
+{{- $js := $jsSlice | resources.Concat "js/bundle.js" | minify | fingerprint -}}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+<script src="{{ "js/add-on.js" | relURL }}"></script>
+{{- template "_internal/google_analytics_async.html" . -}}
