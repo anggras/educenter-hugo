@@ -82,7 +82,18 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-7 text-sm-left text-center">
-          <p class="mb-0">{{ .Site.Params.copyright | markdownify }}</p>
+          <p class="mb-0">
+            {{ with .Site.Copyright | safeHTML }}
+              {{ . }}
+            {{ else }}
+              &copy; {{ .Site.LastChange.Year }}
+              {{if isset .Site.Params "author" }}
+                {{ .Site.Params.author }}
+              {{ else }}
+                {{ .Site.Title }}
+              {{ end }}
+            {{ end }}
+          </p>
         </div>
         <div class="col-sm-5 text-sm-right text-center">
           <ul class="list-inline">
